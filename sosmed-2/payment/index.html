@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pembayaran QRIS - Shine Shop</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script><style>
+*{box-sizing:border-box}
+body{
+  font-family:'Poppins',sans-serif;
+  background:
+    radial-gradient(circle at top left,#00c6ff33,transparent 40%),
+    radial-gradient(circle at bottom right,#0072ff33,transparent 40%),
+    linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  color:#fff;
+}
+.card{
+  width:100%;
+  max-width:460px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(14px);
+  border-radius:22px;
+  padding:24px;
+}
+h2{margin:0;font-size:22px;font-weight:700}
+.subtitle{font-size:14px;color:#cbd5e1;margin-top:4px}
+.qr-wrapper{
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  margin:18px auto;
+  width:fit-content
+}
+.details{font-size:13.5px;line-height:1.7}
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  margin-top:10px;
+  font-size:13px
+}
+  p {
+  color: red; /* Warna merah */
+  font-family: 'Verdana', sans-serif;
+  font-size: 14px; /* Ukuran font 10px */
+  line-height: 1.6;
+  margin-bottom: 20px;
+  }
+  
+.btn{
+  width:100%;
+  margin-top:18px;
+  padding:14px;
+  border-radius:999px;
+  border:none;
+  font-size:15px;
+  font-weight:700;
+  color:#fff;
+  background:linear-gradient(135deg,#00c6ff,#0072ff);
+  cursor:pointer
+}
+.muted{text-align:center;font-size:12px;color:#cbd5e1;margin-top:12px}
+</style><script>
+// ================= USER ID RANDOM =================
+function generateUserID(){
+  return 'user-' + Math.random().toString(36).substring(2,10) + '-' + Date.now().toString(36);
+}
+
+async function getUserID(){
+  let id = localStorage.getItem("user_id");
+  if(!id){
+    id = generateUserID();
+    localStorage.setItem("user_id", id);
+  }
+  return id;
+}
+
+// ================= USER BAN =================
+async function checkUserBan(){
+  try{
+    const userID = await getUserID();
+
+    const res = await fetch("/sosmed-2/payment/user.json",{cache:"no-store"});
+    if(!res.ok) return;
+
+    const list = await res.json();
+    const banned = list.find(x => x.user === userID);
+
+    if(banned){
+      const reason = banned.reason || "Tidak ada keterangan";
+
+      document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:white;text-align:center;">
+      <div style="max-width:420px;background:rgba(255,255,255,.12);padding:30px;border-radius:22px;">
+      <h1>🚫 Akses Diblokir</h1>
+      <p>Akun kamu diblokir</p>
+      <div>${reason}</div>
+      <br>
+      <small>User ID: ${userID}</small>
+      </div></div>`;
+
+      throw new Error("USER_BANNED");
+    }
+  }catch(e){
+    if(e.message === "USER_BANNED") throw e;
+  }
+}
+checkUserBan();
+</script></head><body>
+<div class="card">
+<h2>Pembayaran QRIS Tazz Store - Sosmed 2</h2>
+<div class="subtitle">Scan QR untuk menyelesaikan pembayaran</div><div class="qr-wrapper">
+<canvas id="qrisCanvas" width="240" height="240"></canvas>
+</div><div class="details" id="orderDetails"></div><input type="text" id="namaInput" placeholder="Nama Lengkap">
+<input type="email" id="gmailInput" placeholder="Gmail Aktif">
+<input type="text" id="voucherInput" placeholder="Kode Voucher (opsional)">
+<button id="applyVoucher" class="btn" style="margin-top:10px;background:#22c55e;">Gunakan Voucher</button>
+<input type="file" id="buktiInput" accept="image/*">
+<button id="confirmBtn" class="btn">Konfirmasi Pembayaran</button><div class="muted">Admin memproses maksimal 72 jam</div>
+  <p>Screenshot seluruh transaksi serta bukti transfer untuk berjaga jaga jika terdapat kendala anda bisa menghubungi admin melalui telegram atau discord</p>
+</div><script>
+const discordWebhook = "https://discord.com/api/webhooks/1519652321661816934/WZPBjYrFhWIhacLctBPNekIFwRx337NORr47uogQdKj0nEkeuVJGSC47NAPvk8X9nURH";
+const discordWebhookTransaksi = "https://discord.com/api/webhooks/1519652321661816934/WZPBjYrFhWIhacLctBPNekIFwRx337NORr47uogQdKj0nEkeuVJGSC47NAPvk8X9nURH";
+
+const p = new URLSearchParams(location.search);
+const trx = p.get("trx") || "-";
+const layanan = p.get("layanan") || "-";
+const total = Number(p.get("total") || 0);
+const target = p.get("target") || "-";
+
+let originalTotal = total;
+let finalTotal = total;
+let appliedVoucher = null;
+function updateDisplay(){
+  orderDetails.innerHTML = `
+  <strong>ID Transaksi:</strong> ${trx}<br>
+  <strong>Layanan:</strong> ${layanan}<br>
+  <strong>Target:</strong> ${target}<br>
+  <strong>Total:</strong> <s>Rp ${originalTotal.toLocaleString("id-ID")}</s><br>
+  <strong>Total Bayar:</strong> Rp ${finalTotal.toLocaleString("id-ID")}
+  `;
+  QRCode.toCanvas(qrisCanvas, buildQR(finalTotal), { width:240 }, function(err){
+    if(err) return console.error(err);
+
+    const ctx = qrisCanvas.getContext("2d");
+    const logo = new Image();
+    logo.src = "/home/logo.png";
+
+    logo.onload = function(){
+      const size = 50;
+      const x = (qrisCanvas.width - size)/2;
+      const y = (qrisCanvas.height - size)/2;
+
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(x-5,y-5,size+10,size+10);
+
+      ctx.drawImage(logo,x,y,size,size);
+    };
+  });
+}
+
+function crc16(s){
+let c=0xFFFF;
+for(let i=0;i<s.length;i++){
+c^=s.charCodeAt(i)<<8;
+for(let j=0;j<8;j++){
+c=c&0x8000?(c<<1)^0x1021:c<<1;
+}}
+return (c&0xFFFF).toString(16).toUpperCase().padStart(4,'0');
+}
+function buildQR(a){
+const str=String(parseInt(a));
+const tag="54"+String(str.length).padStart(2,"0")+str;
+const base="00020101021226670016COM.NOBUBANK.WWW01189360050300000879140214526036770909650303UMI51440014ID.CO.QRIS.WWW0215ID20243611417480303UMI5204541153033605802ID5920SHINE SHOP OK19967206008SURABAYA61056011162070703A01";
+const d=base+tag+"6304";
+return d+crc16(d);
+}
+
+async function loadVoucher(){
+  try{
+    const r = await fetch("/sosmed-1/payment/voucher.json",{cache:"no-store"});
+    const data = await r.json();
+    if(!Array.isArray(data)) return [];
+    return data;
+  }catch{return []}
+}
+
+applyVoucher.onclick = async()=>{
+  const code = voucherInput.value.trim().toUpperCase();
+  if(!code) return Swal.fire("Isi kode voucher","","warning");
+
+  const list = await loadVoucher();
+  const v = list.find(x => x.code === code);
+  if(!v) return Swal.fire("Voucher tidak valid","","error");
+
+  let discount = v.type==="percent" ? originalTotal * v.value / 100 : v.value;
+  if(v.max_discount) discount = Math.min(discount, v.max_discount);
+
+  finalTotal = Math.max(originalTotal - discount,0);
+  appliedVoucher = v.code;
+  updateDisplay();
+  Swal.fire("Berhasil","Voucher dipakai","success");
+};
+
+confirmBtn.onclick = async()=>{
+  const nama = namaInput.value;
+  const gmail = gmailInput.value;
+  const file = buktiInput.files[0];
+  const userID = await getUserID();
+  const refCode = localStorage.getItem('referral_code') || "-"; // Mengambil kode referral dengan aman
+
+  if(!nama||!gmail||!file){
+    return Swal.fire("Lengkapi data","","warning");
+  }
+
+  Swal.fire({title:"Mengirim...",didOpen:()=>Swal.showLoading()});
+
+  await fetch("/api/send-telegram",{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json"
+  },
+  body:JSON.stringify({
+    chat_id:"1842273254",
+    text:`
+🆕 TRANSAKSI BARU TAZZ STORE SOSMED 2
+
+ID TRANSAKSI: ${trx}
+Layanan: ${layanan}
+
+Harga asli: Rp${originalTotal.toLocaleString("id-ID")}
+Total Bayar: Rp ${finalTotal.toLocaleString("id-ID")}
+
+Voucher: ${appliedVoucher || "-"}
+User ID: ${userID}
+Referal Code: ${refCode}
+\n
+
+Order sekarang di
+tazzstore.shinedomain.my.id`
+  })
+});    
+  
+  
+  await fetch(discordWebhook,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      content:`💰 Pembayaran Baru TAZZ STORE SOSMED 2\nID: ${trx}\nLayanan: ${layanan}\nHarga Asli: Rp${originalTotal.toLocaleString("id-ID")}\nTotal Bayar: Rp ${finalTotal.toLocaleString("id-ID")}\nTarget: ${target}\nVoucher: ${appliedVoucher || "-"}\nNama: ${nama}\nGmail: ${gmail}\nUser ID: ${userID}\n\nReferal Code: ${refCode}\n\n`
+    })
+  });
+
+  let form = new FormData();
+  form.append("file",file);
+  await fetch(discordWebhook,{method:"POST",body:form});
+
+ 
+  Swal.fire("Berhasil","Terkirim","success");
+};
+
+updateDisplay();
+function ambilReferral() {
+    const savedRef = localStorage.getItem('referral_code');
+    const statusElement = document.getElementById('status-ref');
+    
+    // PERBAIKAN: Menambahkan kondisi 'if(statusElement)' agar tidak error jika id tidak ditemukan di HTML
+    if (statusElement) {
+        if (savedRef) {
+            statusElement.innerHTML = `Terdeteksi! Kode referral Anda adalah: <strong>${savedRef}</strong>`;
+        } else {
+            statusElement.innerHTML = `Tidak ada kode referral yang tersimpan.`;
+        }
+    }
+    return savedRef;
+}
+
+// Jalankan fungsi referral saat halaman dimuat
+ambilReferral();
+
+document.addEventListener("keydown", function(e){
+  // F12
+  if(e.key === "F12") e.preventDefault();
+
+  // Ctrl + Shift + I/C/J
+  if(e.ctrlKey && e.shiftKey &&
+    ["I","C","J"].includes(e.key)) e.preventDefault();
+
+  // Ctrl + U
+  if(e.ctrlKey && e.key === "u") e.preventDefault();
+});
+
+setInterval(() => {
+  const threshold = 160;
+  if (window.devtoolsOpen) return;
+
+  const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+
+  if (widthThreshold && !/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    document.body.innerHTML =
+      "<h1 style='color:gold;text-align:center;margin-top:40vh;'>🚫 Developer Tools Terdeteksi</h1>";
+  }
+}, 2000);
+  
+</script></body>
+</html>
