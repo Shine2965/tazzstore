@@ -67,7 +67,7 @@ async function blockIPCloudflare(ip) {
             target: "ip",
             value: ip
           },
-          notes: "Auto blocked by Vercel Security"
+          notes: "Auto blocked by Security Tazz Store"
         })
       }
     );
