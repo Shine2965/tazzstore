@@ -1,0 +1,456 @@
+<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tazz Store</title><link rel="icon" href="/home/logo.png" type="image/png">
+  <link rel="icon" href="/home/logo.png" type="image/png">
+<link rel="shortcut icon" href="/home/logo.png" type="image/png">
+<link rel="apple-touch-icon" href="/home/logo.png">
+<meta name="theme-color" content="#0f172a"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Poppins',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),url('/home/logo.png') center/cover no-repeat fixed;
+  color:white;
+}
+.container{
+  width:90%;
+  max-width:480px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(10px);
+  border-radius:18px;
+  padding:35px 25px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.1);
+}
+h1{font-size:22px;font-weight:600;margin-bottom:30px;}
+.nav-btn{
+  width:100%;padding:14px;margin:10px 0;border-radius:12px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.08);
+  color:white;font-size:14px;font-weight:500;cursor:pointer;
+  transition:0.25s;
+}
+.nav-btn:hover{background:rgba(255,255,255,0.18);}
+.footer{margin-top:25px;font-size:12px;opacity:0.6;}
+.user-bubble{
+  position:fixed;bottom:20px;right:20px;
+  background:rgba(0,0,0,0.85);
+  padding:12px 16px;border-radius:12px;
+  font-size:13px;z-index:9999;
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.3s;
+}
+.user-bubble.show{
+  opacity:1;
+  transform:translateY(0);
+}
+</style></head><body><div class="container">
+<h1>Tazz Store Suntik Sosmed</h1>
+  <h5>Status Referral Saat Ini:</h5>
+   <p id="status-ref">Memeriksa data...</p>
+  
+  <button class="nav-btn" onclick="location.href='/sosmed-2/'">🛒 Belanja</button>
+<button class="nav-btn" onclick="location.href='/cekakses/'">🔥 Cek Akses<<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panji Shop</title><link rel="icon" href="/home/logo.png" type="image/png">
+  <link rel="icon" href="/home/logo.png" type="image/png">
+<link rel="shortcut icon" href="/home/logo.png" type="image/png">
+<link rel="apple-touch-icon" href="/home/logo.png">
+<meta name="theme-color" content="#0f172a"><script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Poppins',sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)),url('/home/logo.png') center/cover no-repeat fixed;
+  color:white;
+}
+.container{
+  width:90%;
+  max-width:480px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(10px);
+  border-radius:18px;
+  padding:35px 25px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.1);
+}
+h1{font-size:22px;font-weight:600;margin-bottom:30px;}
+.nav-btn{
+  width:100%;padding:14px;margin:10px 0;border-radius:12px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.08);
+  color:white;font-size:14px;font-weight:500;cursor:pointer;
+  transition:0.25s;
+}
+.nav-btn:hover{background:rgba(255,255,255,0.18);}
+.footer{margin-top:25px;font-size:12px;opacity:0.6;}
+.user-bubble{
+  position:fixed;bottom:20px;right:20px;
+  background:rgba(0,0,0,0.85);
+  padding:12px 16px;border-radius:12px;
+  font-size:13px;z-index:9999;
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.3s;
+}
+.user-bubble.show{
+  opacity:1;
+  transform:translateY(0);
+}
+</style></head><body><div class="container">
+<h1>Panji Shop Suntik Sosmed</h1>
+  <h5>Status Referral Saat Ini:</h5>
+   <p id="status-ref">Memeriksa data...</p>
+  
+  <button class="nav-btn" onclick="location.href='/sosmed-2/'">🛒 Belanja</button>
+<button class="nav-btn" onclick="location.href='https://store.shinedomain.my.id'">📰 Syarat dan ketentuan </button>
+<div class="footer">©Shine Shop - 2023</div>
+</div><div id="userBubble" class="user-bubble"></div>
+  <script>
+    async function securityCheck() {
+  try {
+    const res = await fetch("/api/security");
+
+    if (!res.ok) {
+      document.body.innerHTML =
+      "<h1 style='text-align:center;color:red;margin-top:40vh'>🚫 Akses Ditolak</h1>";
+      return;
+    }
+
+    const data = await res.json();
+
+    if (data.status !== "ok") {
+      document.body.innerHTML =
+      "<h1 style='text-align:center;color:red;margin-top:40vh'>🚫 IP Diblokir</h1>";
+      return;
+    }
+
+    console.log("Security OK", data.ip);
+
+  } catch (e) {
+    document.body.innerHTML =
+    "<h1 style='text-align:center;color:red;margin-top:40vh'>Server Error</h1>";
+  }
+}
+
+securityCheck();
+  
+function generateUserID(){
+  return 'user-'+Math.random().toString(36).substring(2,10)+'-'+Date.now().toString(36);
+}
+function getUserID(){
+  let id=localStorage.getItem("user_id");
+  if(!id){id=generateUserID();localStorage.setItem("user_id",id);}return id;
+}
+const userID=getUserID();
+
+const bubble=document.getElementById("userBubble");
+
+function showUserBubble(){
+  bubble.innerHTML="<b>Selamat Datang</b><br>User ID:<br>"+userID;
+  bubble.classList.add("show");
+
+  setTimeout(()=>{
+    bubble.classList.remove("show");
+    cekPesan();
+  },500);
+}
+
+// MULTIPLE SWEET ALERT SUPPORT
+async function cekPesan(){
+  try{
+    const res=await fetch("/home2/pesan.json?cache="+Date.now());
+    const data=await res.json();
+
+    let alerts=[];
+
+    if(data[userID]){
+      alerts.push({
+        title:'📩 Pesan Baru',
+        html:'<b>UserID:</b><br>'+userID+'<br><br><b>Pesan:</b><br>'+data[userID],
+        icon:'info'
+      });
+    }
+
+    if(data["all"]){
+      alerts.push({
+        title:'📢 Pengumuman',
+        html:data["all"],
+        icon:'warning'
+      });
+    }
+       if(data["all1"]){
+      alerts.push({
+        title:'📢 Pengumuman',
+        html:data["all1"],
+        icon:'warning'
+      });
+    }
+       if(data["all2"]){
+      alerts.push({
+        title:'📢 Pengumuman',
+        html:data["all2"],
+        icon:'warning'
+      });
+    }
+
+
+
+    // Tampilkan lebih dari 2 alert secara berurutan
+    for(const alert of alerts){
+      await Swal.fire({
+        title:alert.title,
+        html:alert.html,
+        icon:alert.icon,
+        confirmButtonText:'Tutup'
+      });
+    }
+
+  }catch(e){console.log("Tidak ada pesan.");}
+}
+
+window.addEventListener("load",showUserBubble);
+
+                  // 1. SKRIP MENYIMPAN REFERRAL CODE DARI URL
+        function simpanReferral() {
+            // Mengambil semua parameter yang ada di URL
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Mengambil nilai dari parameter 'ref'
+            const referralCode = urlParams.get('ref');
+
+            // Jika parameter 'ref' ditemukan di URL, simpan ke localStorage
+            if (referralCode) {
+                localStorage.setItem('referral_code', referralCode);
+                console.log('Referral code berhasil disimpan: ' + referralCode);
+            } else {
+                console.log('Tidak ada parameter referral di URL.');
+            }
+        }
+
+        // 2. SKRIP MENGAMBIL DATA REFERRAL DARI LOCALSTORAGE
+        function ambilReferral() {
+            // Membaca data dari localStorage
+            const savedRef = localStorage.getItem('referral_code');
+            
+            // Menampilkan data ke elemen HTML
+            const statusElement = document.getElementById('status-ref');
+            if (savedRef) {
+                statusElement.innerHTML = `Terdeteksi! Kode referral Anda adalah: <strong>${savedRef}</strong>`;
+            } else {
+                statusElement.innerHTML = `Tidak ada kode referral yang tersimpan.`;
+            }
+            
+            return savedRef;
+        }
+
+        simpanReferral();
+        ambilReferral();
+
+document.addEventListener("keydown", function(e){
+  // F12
+  if(e.key === "F12") e.preventDefault();
+
+  // Ctrl + Shift + I/C/J
+  if(e.ctrlKey && e.shiftKey &&
+    ["I","C","J"].includes(e.key)) e.preventDefault();
+
+  // Ctrl + U
+  if(e.ctrlKey && e.key === "u") e.preventDefault();
+});
+
+// Deteksi DevTools (lebih aman, tidak pakai resize hack)
+setInterval(() => {
+  const threshold = 160;
+  if (window.devtoolsOpen) return;
+
+  const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+
+  if (widthThreshold && !/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    document.body.innerHTML =
+      "<h1 style='color:gold;text-align:center;margin-top:40vh;'>🚫 Developer Tools Terdeteksi</h1>";
+  }
+}, 2000);
+</script></body>
+</html>
+<div class="footer">©Shine Shop - 2023</div>
+</div><div id="userBubble" class="user-bubble"></div>
+  <script>
+    async function securityCheck() {
+  try {
+    const res = await fetch("/api/security");
+
+    if (!res.ok) {
+      document.body.innerHTML =
+      "<h1 style='text-align:center;color:red;margin-top:40vh'>🚫 Akses Ditolak</h1>";
+      return;
+    }
+
+    const data = await res.json();
+
+    if (data.status !== "ok") {
+      document.body.innerHTML =
+      "<h1 style='text-align:center;color:red;margin-top:40vh'>🚫 IP Diblokir</h1>";
+      return;
+    }
+
+    console.log("Security OK", data.ip);
+
+  } catch (e) {
+    document.body.innerHTML =
+    "<h1 style='text-align:center;color:red;margin-top:40vh'>Server Error</h1>";
+  }
+}
+
+securityCheck();
+  
+function generateUserID(){
+  return 'user-'+Math.random().toString(36).substring(2,10)+'-'+Date.now().toString(36);
+}
+function getUserID(){
+  let id=localStorage.getItem("user_id");
+  if(!id){id=generateUserID();localStorage.setItem("user_id",id);}return id;
+}
+const userID=getUserID();
+
+const bubble=document.getElementById("userBubble");
+
+function showUserBubble(){
+  bubble.innerHTML="<b>Selamat Datang</b><br>User ID:<br>"+userID;
+  bubble.classList.add("show");
+
+  setTimeout(()=>{
+    bubble.classList.remove("show");
+    cekPesan();
+  },500);
+}
+
+// MULTIPLE SWEET ALERT SUPPORT
+async function cekPesan(){
+  try{
+    const res=await fetch("/home2/pesan.json?cache="+Date.now());
+    const data=await res.json();
+
+    let alerts=[];
+
+    if(data[userID]){
+      alerts.push({
+        title:'📩 Pesan Baru',
+        html:'<b>UserID:</b><br>'+userID+'<br><br><b>Pesan:</b><br>'+data[userID],
+        icon:'info'
+      });
+    }
+
+    if(data["all"]){
+      alerts.push({
+        title:'📢 Pengumuman',
+        html:data["all"],
+        icon:'warning'
+      });
+    }
+       if(data["all1"]){
+      alerts.push({
+        title:'📢 Pengumuman',
+        html:data["all1"],
+        icon:'warning'
+      });
+    }
+       if(data["all2"]){
+      alerts.push({
+        title:'📢 Pengumuman',
+        html:data["all2"],
+        icon:'warning'
+      });
+    }
+
+
+
+    // Tampilkan lebih dari 2 alert secara berurutan
+    for(const alert of alerts){
+      await Swal.fire({
+        title:alert.title,
+        html:alert.html,
+        icon:alert.icon,
+        confirmButtonText:'Tutup'
+      });
+    }
+
+  }catch(e){console.log("Tidak ada pesan.");}
+}
+
+window.addEventListener("load",showUserBubble);
+
+                  // 1. SKRIP MENYIMPAN REFERRAL CODE DARI URL
+        function simpanReferral() {
+            // Mengambil semua parameter yang ada di URL
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Mengambil nilai dari parameter 'ref'
+            const referralCode = urlParams.get('ref');
+
+            // Jika parameter 'ref' ditemukan di URL, simpan ke localStorage
+            if (referralCode) {
+                localStorage.setItem('referral_code', referralCode);
+                console.log('Referral code berhasil disimpan: ' + referralCode);
+            } else {
+                console.log('Tidak ada parameter referral di URL.');
+            }
+        }
+
+        // 2. SKRIP MENGAMBIL DATA REFERRAL DARI LOCALSTORAGE
+        function ambilReferral() {
+            // Membaca data dari localStorage
+            const savedRef = localStorage.getItem('referral_code');
+            
+            // Menampilkan data ke elemen HTML
+            const statusElement = document.getElementById('status-ref');
+            if (savedRef) {
+                statusElement.innerHTML = `Terdeteksi! Kode referral Anda adalah: <strong>${savedRef}</strong>`;
+            } else {
+                statusElement.innerHTML = `Tidak ada kode referral yang tersimpan.`;
+            }
+            
+            return savedRef;
+        }
+
+        simpanReferral();
+        ambilReferral();
+
+document.addEventListener("keydown", function(e){
+  // F12
+  if(e.key === "F12") e.preventDefault();
+
+  // Ctrl + Shift + I/C/J
+  if(e.ctrlKey && e.shiftKey &&
+    ["I","C","J"].includes(e.key)) e.preventDefault();
+
+  // Ctrl + U
+  if(e.ctrlKey && e.key === "u") e.preventDefault();
+});
+
+// Deteksi DevTools (lebih aman, tidak pakai resize hack)
+setInterval(() => {
+  const threshold = 160;
+  if (window.devtoolsOpen) return;
+
+  const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+
+  if (widthThreshold && !/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    document.body.innerHTML =
+      "<h1 style='color:gold;text-align:center;margin-top:40vh;'>🚫 Developer Tools Terdeteksi</h1>";
+  }
+}, 2000);
+</script></body>
+</html>
+
