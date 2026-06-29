@@ -1,0 +1,604 @@
+<!DOCTYPE html>  
+<html lang="id">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>Panji Shop - SMM</title>  
+  <style>
+/* ===============================  
+   ROOT THEME  
+=================================*/  
+:root {  
+  --bg: #090d16;  
+  --glass: rgba(255, 255, 255, 0.03);  
+  --glass-strong: rgba(255, 255, 255, 0.07);  
+  --border: rgba(255, 255, 255, 0.08);  
+  --accent1: #8b5cf6;  
+  --accent2: #06b6d4;  
+  --text: #f1f5f9;  
+  --text-muted: #94a3b8;
+  --danger: #f87171; /* Merah soft untuk dark mode */
+}  
+  
+/* ===============================  
+   BASE  
+=================================*/  
+* {  
+  box-sizing: border-box;  
+  font-family: 'Poppins', sans-serif;  
+  transition: all 0.3s ease;
+}  
+  
+body {  
+  margin: 0;  
+  color: var(--text);  
+  background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #0b1524);  
+  background-size: 400% 400%;  
+  animation: gradientBG 15s ease infinite;  
+  min-height: 100vh;
+}  
+  
+@keyframes gradientBG {  
+  0% { background-position: 0% 50%; }  
+  50% { background-position: 100% 50%; }  
+  100% { background-position: 0% 50%; }  
+}  
+  
+/* ===============================  
+   HEADER  
+=================================*/  
+.header {  
+  display: flex;  
+  align-items: center;  
+  padding: 16px 24px;  
+  backdrop-filter: blur(16px);  
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 23, 42, 0.5);  
+  border-bottom: 1px solid var(--border);  
+  position: sticky;
+  top: 0;
+  z-index: 80;
+}  
+  
+.brand {  
+  display: flex;  
+  align-items: center;  
+  gap: 14px;  
+}  
+  
+.logo {  
+  width: 44px;  
+  height: 44px;  
+  border-radius: 12px;  
+  overflow: hidden;  
+  background: rgba(255, 255, 255, 0.05);  
+  border: 1px solid var(--border);  
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+}  
+  
+.logo img {  
+  width: 100%;  
+  height: 100%;  
+  object-fit: cover;  
+}  
+  
+h1 {  
+  font-size: 18px;  
+  margin: 0;  
+  font-weight: 600;  
+  letter-spacing: 0.5px;
+}  
+  
+/* ===============================  
+   HAMBURGER  
+=================================*/  
+.hamburger-btn {  
+  margin-left: auto;  
+  background: var(--glass);  
+  border: 1px solid var(--border);  
+  padding: 10px 12px;  
+  border-radius: 10px;  
+  cursor: pointer;  
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}  
+
+.hamburger-btn:hover {
+  background: var(--glass-strong);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+  
+.hamburger-icon span {  
+  display: block;  
+  height: 2px;  
+  width: 22px;  
+  background: white;  
+  border-radius: 6px;  
+}  
+  
+.hamburger-btn.active span:nth-child(1) {  
+  transform: rotate(45deg) translateY(6px);  
+}  
+.hamburger-btn.active span:nth-child(2) {  
+  opacity: 0;  
+}  
+.hamburger-btn.active span:nth-child(3) {  
+  transform: rotate(-45deg) translateY(-6px);  
+}  
+  
+/* ===============================  
+   OFFCANVAS  
+=================================*/  
+.offcanvas {  
+  position: fixed;  
+  top: 0;  
+  left: -280px;  
+  width: 260px;  
+  height: 100%;  
+  background: #090d16;  
+  padding: 30px 20px;  
+  z-index: 100;  
+  border-right: 1px solid var(--border);  
+  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+}  
+  
+.offcanvas.open {  
+  left: 0;  
+}  
+  
+.menu-list {  
+  list-style: none;  
+  padding: 0;  
+  margin-top: 20px;
+}  
+  
+.menu-list li {  
+  margin-bottom: 12px;  
+}  
+  
+.menu-list a {  
+  display: block;  
+  padding: 14px;  
+  background: var(--glass);  
+  border-radius: 12px;  
+  color: var(--text-muted);  
+  text-decoration: none;  
+  border: 1px solid var(--border);  
+  font-weight: 500;
+  font-size: 14px;
+}  
+  
+.menu-list a:hover {  
+  background: rgba(139, 92, 246, 0.1);  
+  color: white;
+  border-color: var(--accent1);
+  transform: translateX(6px);  
+}  
+  
+/* ===============================  
+   OVERLAY  
+=================================*/  
+.overlay {  
+  position: fixed;  
+  inset: 0;  
+  background: rgba(0, 0, 0, 0.5);  
+  backdrop-filter: blur(4px);
+  opacity: 0;  
+  pointer-events: none;  
+  z-index: 90;  
+}  
+.overlay.show {  
+  opacity: 1;  
+  pointer-events: auto;  
+}  
+  
+/* ===============================  
+   CONTAINER  
+=================================*/  
+.container {  
+  max-width: 720px;  
+  margin: 40px auto;  
+  padding: 40px;  
+  border-radius: 24px;  
+  background: rgba(30, 41, 59, 0.4);  
+  backdrop-filter: blur(20px);  
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);  
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);  
+}  
+  
+h2 {  
+  text-align: center;  
+  margin-top: 0;
+  margin-bottom: 30px;  
+  font-weight: 700;  
+  font-size: 26px;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));  
+  -webkit-background-clip: text;  
+  -webkit-text-fill-color: transparent;  
+}  
+  
+/* ===============================  
+   FORM  
+=================================*/  
+label {  
+  display: block;  
+  margin-top: 20px;  
+  font-size: 13px;  
+  font-weight: 500;  
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}  
+  
+input, select {  
+  width: 100%;  
+  padding: 14px 16px;  
+  margin-top: 8px;  
+  border-radius: 12px;  
+  border: 1px solid var(--border);  
+  background: rgba(15, 23, 42, 0.6);  
+  color: white;  
+  font-size: 14px;  
+}  
+  
+input:focus, select:focus {  
+  outline: none;  
+  border-color: var(--accent2);  
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);  
+  background: rgba(15, 23, 42, 0.8);
+}  
+  
+.desc, .aver {  
+  margin-top: 12px;  
+  padding: 16px;  
+  background: var(--glass);  
+  border-radius: 12px;  
+  border: 1px dashed rgba(255, 255, 255, 0.12);  
+  font-size: 13px;  
+  color: var(--text-muted);
+  line-height: 1.5;
+}  
+  
+button {  
+  width: 100%;  
+  padding: 16px;  
+  margin-top: 30px;  
+  border-radius: 12px;  
+  border: none;  
+  font-weight: 600;  
+  font-size: 15px;  
+  cursor: pointer;  
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));  
+  color: white;  
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);  
+}  
+  
+button:hover {  
+  transform: translateY(-2px);  
+  box-shadow: 0 12px 25px rgba(6, 182, 212, 0.5);  
+}  
+
+p {  
+  color: var(--danger);  
+  font-size: 13px;  
+  line-height: 1.6;  
+  margin-top: 10px;
+  margin-bottom: 20px;  
+}
+</style>
+ 
+</head>  
+<body>  
+<audio id="bgm" autoplay loop muted>  
+  <source src="https://raw.githubusercontent.com/IkyyExecutive-v2/IkyySukaNgewe/main/uploads/1773720595309_2430_1773720593858_file_3108.mp3" type="audio/mpeg">  
+</audio>  
+  
+<!-- HEADER -->  
+<header class="header">  
+  <div class="brand">  
+    <div class="logo">  
+      <img src="/home/logo.png" alt="Shine Shop Logo">  
+    </div>  
+    <h1>Panji Shop</h1>  
+  </div>  
+  
+  <button class="hamburger-btn" id="menuToggle">  
+    <div class="hamburger-icon">  
+      <span></span>  
+      <span></span>  
+      <span></span>  
+    </div>  
+  </button>  
+</header>  
+  
+<div id="menuOverlay" class="overlay"></div>  
+  
+<nav id="siteMenu" class="offcanvas">  
+  <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">  
+    <strong style="font-size:18px">Menu Utama</strong>  
+    <button class="close" id="menuClose" style="font-size:22px;background:none;border:0;color:white;cursor:pointer">✕</button>  
+  </header>  
+  
+  <ul class="menu-list">  
+    <li><a href="/home2/">🏠 Home</a>/</li>
+	<li><a href="/sosmed-1/">⚜️ Suntik Sosmed 1</a></li>  
+     </ul>  
+</nav>  
+  
+<script>  
+const toggleBtn=document.getElementById("menuToggle");  
+const closeBtn=document.getElementById("menuClose");  
+const offcanvas=document.getElementById("siteMenu");  
+const overlay=document.getElementById("menuOverlay");  
+  
+function openMenu(){  
+  offcanvas.classList.add("open");  
+  overlay.classList.add("show");  
+  toggleBtn.classList.add("active");  
+}  
+function closeMenu(){  
+  offcanvas.classList.remove("open");  
+  overlay.classList.remove("show");  
+  toggleBtn.classList.remove("active");  
+}  
+  
+toggleBtn.onclick=()=> offcanvas.classList.contains("open")?closeMenu():openMenu();  
+closeBtn.onclick=closeMenu;  
+overlay.onclick=closeMenu;  
+</script>  
+  
+<!-- FORM -->  
+<div class="container">  
+  
+<h2>Suntik Sosmed 2 - Panji Shop</h2>  
+  
+<label>Cari Layanan:</label>  
+<input type="text" id="search" placeholder="Contoh: Instagram / 14444" onkeyup="searchLayanan()">  
+  
+<label for="kategori">Kategori:</label>  
+<select id="kategori" onchange="loadLayanan()">  
+  <option value="">-- Pilih Kategori --</option>  
+</select>  
+  
+<label for="layanan">Layanan:</label>  
+<select id="layanan" onchange="showInfo()">  
+  <option value="">-- Pilih Layanan --</option>  
+</select>  
+  
+<div class="desc" id="infoLayanan"></div>  
+  
+<label>Jumlah Pesanan:</label>  
+<input type="number" id="jumlah" min="1" oninput="hitungTotal()">  
+  
+<label>Target / Link:</label>  
+<input type="text" id="target" placeholder="Masukkan username atau link">  
+  
+<label>Total Harga (Rp):</label>  
+<input type="text" id="total" readonly>  
+  
+<button onclick="lanjutPembayaran()">Lanjut ke Pembayaran</button>  
+  
+</div>  
+  
+<script>  
+	const audio = document.getElementById("bgm");  
+  
+// setelah audio mulai, unmute otomatis  
+audio.addEventListener("canplay", () => {  
+  audio.muted = false;  
+  audio.volume = 1.0; // atur volume (0.0 - 1.0)  
+});  
+  
+// fallback jika browser nahan autoplay  
+setTimeout(() => {  
+  audio.muted = false;  
+  audio.play().catch(()=>{});  
+}, 1000);  
+	  
+// DATA LAYANAN  
+const layananData={  
+	  "WhatsApp Channel Member": [
+		 {"id": "1285", "name": "Whatsapp Channel Member FP 2 [ max 50K ] Global | 1k/days | No Refill (Rp 48.000/K)", "pricePerFollower": 48, "min": 10, "max": 10000, "desc": "Masukkan link channel WhatsApp bukan grup WhatsApp NO GARANSI" }
+		 ],
+	 "PAKET FYP Tiktok": [
+		 {"id": "0001", "name": "Paket FYP Tiktok 1 (Rp 20.000/paket)", "pricePerFollower": 20000, "min": 1, "max": 100, "desc": "Masukkan link postingan tiktok. Anda akan mendapatkan 10K views 3K likes dan 1k shares" },
+		 {"id": "0003", "name": "Paket FYP Tiktok 2 (Rp 40.000/paket)", "pricePerFollower": 40000, "min": 1, "max": 100, "desc": "Masukkan link postingan tiktok. Anda akan mendapatkan 10K views 3K likes 1k shares dan 200 Followers" },
+		  {"id": "0004", "name": "Paket FYP Tiktok Reguler (Rp 70.000/paket)", "pricePerFollower": 70000, "min": 1, "max": 100, "desc": "Masukkan link postingan tiktok. \n Anda akan mendapatkan <br> 10K views <br> 5K likes <br> 1k shares <br> 400 Followers" }
+		 ],
+	 "PAKET FYP TELEGRAM": [
+		  {"id": "0002", "name": "Paket FYP Telegram Channel (Rp 8.000/paket)", "pricePerFollower": 8000, "min": 1, "max": 100, "desc": "Masukkan link channel telegram anda. Anda akan mendapatkan 1K views 300 Followers" }
+		 ],
+	    "WhatsApp Reaction": [
+		 {"id": "1352", "name": "Whatsapp Channel Post Reaction Random Mix [👍❤️😂😲😥🙏] [ max 50K ] | Ultra Fast (Rp 25.000/K)", "pricePerFollower": 25, "min": 100, "max": 10000, "desc": "masukkan link postingan pada channel WhatsApp NO GARANSI" }
+			],
+      "Facebook Followers [All Type]": [  
+		{ "id": "1616", "name": "Facebook Followers FP 4 [ max 1M ] Hidden Data | Speed 20K/ Day | No Refill (Rp 2.100/K)", "pricePerFollower": 2.1, "min": 100, "max": 1000000, "desc":  "Masukkan username/link account facebook NO GARANSI" },  
+        { "id": "1606", "name": "Facebook Followers FP 3 [ max 1M ] Hidden Quality | Speed 50K/ Day | Refill 30 Days (Rp 4.500/K)", "pricePerFollower": 4.5, "min": 100, "max": 1000000, "desc":  "Masukkan username/link account facebook GARANSI 30 HARI" }
+		],
+	 "Telegram Channel Member": [  
+		{ "id": "357", "name": "Telegram Channel Members FP 1 [ max 100K ] (Rp 4.800/K)", "pricePerFollower": 4.8, "min": 100, "max": 1000000, "desc":  "Masukkan username telegram atau link CHANNEL WAJIB PUBLIC! <br> NO GARANSI" },  
+    	{ "id": "1147", "name": "Telegram Channel/Group Members FP 11 [ max 150K ] Refill 30Days | 15k/days (Rp 12.600/K)", "pricePerFollower": 12.6, "min": 100, "max": 1000000, "desc":  "Masukkan username telegram atau link CHANNEL WAJIB PUBLIC! GARANSI 30 HARI" },
+		{ "id": "808", "name": "Telegram Channel Members FP 10 [ R30 ] [ High quality ] [100k/day] less drop (Rp 16.000/K)", "pricePerFollower": 16, "min": 100, "max": 1000000, "desc":  "Masukkan username telegram atau link CHANNEL WAJIB PUBLIC! GARANSI 30 HARI" },
+		 {"id": "363", "name": "Telegram Channel/Group Members FP 7 | Non Drop | 30 Days Refill (Rp 26.000/K)", "pricePerFollower": 26, "min": 100, "max": 100000, "desc": "masukkan link channel telegram wajib public!, garansi 30 hari, permanen" }
+      ],
+	"Telegram Channel/Post Views": [  
+		{ "id": "374", "name": "Telegram Post View - LAST 10 POST [10M] (Rp 3.800/K)", "pricePerFollower": 3.8, "min": 100, "max": 1000000, "desc":  "Masukkan username telegram atau link CHANNEL WAJIB PUBLIC! NO GARANSI/n DAPAT MENAMBAHKAN VIEWS POSTINGAN AKUN ATAU CHANNEL TELEGRAM UNTUK 10 POST TERAKHIR" }  
+    	],
+	"Telegram Post Custom Comments Indonesia": [
+		{"id": "1", "name": "Telegram Buzzer Indonesia Post Custom Comments | Max 500 - Rp 320.000/K", "pricePerFollower": 320, "min": 10, "max": 10000, "desc": "silahkan kirim custom komen ke https://shinedomain.my.id/kontaksmm <br> Custom komen 10 harap kirim sebanyak 10 baris meskipun pesannya sama"}
+		],
+	"Tiktok Followers Indonesia": [
+		{ "id": "1517", "name": "Tiktok Followers Indonesia FP 2 [ High Quality ] [ No Refill] - Rp65.000/K", "pricePerFollower": 65, "min": 100, "max": 10000, "desc": "Tidak ada garansi!" },
+		{ "id": "682", "name": "Tiktok Followers Indonesia FP 1 [ High Quality ] [ Refill 30 Days ] - Rp100.000/K", "pricePerFollower": 100, "min": 50, "max": 10000, "desc": "Permanen\nGaransi 30 Hari\n akun berprofil" }
+	],
+	 "Tiktok Followers (Emergency)": [  
+		{ "id": "1502", "name": "TikTok Followers FP 34 [ max 1M ]  10K/ Day | No Refill (Rp 33.000/K)", "pricePerFollower": 33, "min": 100, "max": 1000000, "desc":  "NO GARANSI!" },
+     { "id": "1395", "name": "TikTok Followers FP 15 | max 10M | 100% Real Account  | Speed 100K/ Day | Working Update | No Refill (Rp 36.100/K)", "pricePerFollower": 36.1, "min": 100, "max": 1000000, "desc":  "- Low Speed - Speed 1K/ Day- No Refill" },
+       { "id": "1733", "name": "TikTok Followers FP 1 [ max 1M ] Profile Quality | 50K/ Day | No Refill (Rp 36.500/K)", "pricePerFollower": 36.5, "min": 10, "max": 1000000, "desc":  "Speed 50K/Day No Refill" },
+		 { "id": "1396", "name": "TikTok Followers FP 16 [ max 10M ] 100% Real Account [ Speed 100K/ Day ] Working Update [ Refill 30 Days ] (Rp 46.000/K)", "pricePerFollower": 46, "min": 10, "max": 100000, "desc": "Garansi 30 hari" }
+      ],
+   "Instagram Followers (Best Speed)": [  
+	   {"id": "1630", "name": "Instagram Followers FP 20 [ max 10K ] Profile Quality | Speed 5K/ Day | No Refill (Rp 4.700/k)", "pricePerFollower": 4.7, "min": 100, "max": 100000, "desc": "NO GARANSI <br> HIGH DROP"},
+	{"id":"1674", "name": "Instagram Followers FP 23 [ max 1M ] [ Very Low Drop ] [ No Refill ] (Rp 7.000/K)", "pricePerFollower": 7, "min": 100, "max": 10000, "desc": "Tidak ada garansi apapun yang terjadi <br> TidAK ADA PROSES"},
+		{ "id": "1620", "name": "Instagram Followers FP 15 [ max 5M ] Mix Quality | Speed 50K/ Day | NR (Rp 8.600/K)", "pricePerFollower": 8.6, "min": 100, "max": 1000000, "desc":  "NO GARANSI!" },
+	   { "id": "1622", "name": " Instagram Followers FP 17 [ max 1M ] Real Quality | Speed 100K/ Day | Refill 30 Days (Rp 16.000/k)", "pricePerFollower": 16, "min": 50, "max": 500000,
+		"desc": "Real Quality <br>- Speed 100K/ Day <br> Refill 30 Days" }, 
+     { "id": "1572", "name": "Instagram Followers FP 12 [ max 1M ] Real | 40K/ Day | Refill 30 Days (Rp 29.000/K)", "pricePerFollower": 29, "min": 100, "max": 1000000, "desc":  "Free Refill 30D" },
+       { "id": "1492", "name": "Instagram Followers FP 7 [ max 100K ] [ Old Account ] [ Speed 5K - 20K/ Day ] [ Refill 30 Days ] (Rp 35.200/K)", "pricePerFollower": 35.2, "min": 100, "max": 1000000, "desc":  "Refill 30D" }
+      ],
+	"Instagram Followers Indonesia": [
+		{"id": "1415", "name": "Instagram Followers Indonesia FP 16 [ max 1K ] [ Profile Account ] [ Low Drop ] (Rp 30.000/K)", "pricePerFollower": 30, "min": 100, "max": 2000, "desc": "Tidak ada garansi <br> Followers Indonesia" }
+			],
+	"Instagram Like": [
+		{ "id":"1473", "name": " Instagram Likes FP 21 [ max 1M ] Speed 100K/Day | Best Speed | Refill 30 Days - Rp 2.000/K", "pricePerFollower": 2, "min": 100, "max": 100000, "desc": "Garansi 30 hari" }, 
+		{ "id": "86", "name": " Instagram Likes FP 8 [High Quality All with Profiles] [No Drop] [10-50K/D] [Instant] - Rp 6.000/K", "pricePerFollower": 6, "min": 100, "max": 10000, "desc": "Permanen <br> no garansi" }
+		], 
+  "Tiktok Views": [  
+		{ "id": "1600", "name": "Tiktok View FP 54 [ max Unlimited ] Speed 500K/ Day | No Refill (Rp 600/K)", "pricePerFollower": 0.6, "min": 1000, "max": 1000000, "desc":  "NO GARANSI!" },
+     { "id": "1568", "name": "TikTok View 48 [ max Unlimited ] 5M/ Day | No Refill (Rp 1.200/K)", "pricePerFollower": 1.2, "min": 1000, "max": 1000000, "desc":  "No Garansi" }
+      ],
+  "Tiktok Like": [  
+	  {"id": "1704", "name": "Tiktok Likes FP 116 [ max 100K ] LQ | speed 20K/days | No Refill (Rp 1.909/K)", "pricePerFollower": 1.909, "min": 100, "max": 100000, "desc": "tidak ada garansi <br> kualitas rendah"},
+		{ "id": "1600", "name": "TikTok Likes FP 95 | max 1M | Speed 50K/ Days | Refill 30 Days (Rp 6.000/K)", "pricePerFollower": 6, "min": 100, "max": 1000000, "desc":  "GARANSI 30D, MIX QUALITY" }, 
+	  { "id": "882", "name": " Tiktok LIKE FP 44 [ Refill 90 Days ] Non Drop [ Ultra Fast ] (Rp 8.000/K)", "pricePerFollower": 8, "min": 100, "max": 100000, "desc": "Permanen, garansi 90 hari" }
+      ],
+	"Shopee Followers": [
+		{"id": "621", "name": "Shopee Followers Indonesia FP 3 [ NON DROP ][ max 10K ] [ INSTANT ] - Rp12.000/K", "pricePerFollower": 14, "min": 100, "max": 10000, "desc": "Permanen\nNo garansi"}
+      ]
+};  
+  
+let selectedService=null;  
+  
+window.onload=function(){  
+  const kategori=document.getElementById("kategori");  
+  for(let k in layananData){  
+    let opt=document.createElement("option");  
+    opt.value=k; opt.textContent=k;  
+    kategori.appendChild(opt);  
+  }  
+}  
+  
+function loadLayanan(){  
+  const kategori=document.getElementById("kategori").value;  
+  const layanan=document.getElementById("layanan");  
+  layanan.innerHTML="<option value=''>-- Pilih Layanan --</option>";  
+  
+  if(kategori){  
+    layananData[kategori].forEach(l=>{  
+      let opt=document.createElement("option");  
+      opt.value=l.id;  
+      opt.textContent=l.name+" (ID: "+l.id+")";  
+      layanan.appendChild(opt);  
+    });  
+  }  
+  document.getElementById("infoLayanan").innerHTML="";  
+  selectedService=null;  
+}  
+  
+function showInfo(){  
+  const kategori=document.getElementById("kategori").value;  
+  const layananID=document.getElementById("layanan").value;  
+  
+  selectedService=layananData[kategori].find(l=>l.id==layananID);  
+  document.getElementById("infoLayanan").innerHTML=  
+  `<b>${selectedService.name}</b><br>  
+   ID Produk: ${selectedService.id}<br>  
+   Harga: Rp${selectedService.pricePerFollower}/unit<br>  
+   Min: ${selectedService.min} | Max: ${selectedService.max}<br>  
+   ${selectedService.desc}`;  
+}  
+  
+function hitungTotal(){  
+  if(!selectedService)return;  
+  const jumlah=parseInt(document.getElementById("jumlah").value||"0");  
+  if(jumlah < selectedService.min || jumlah > selectedService.max){  
+    document.getElementById("total").value="Jumlah tidak valid!";  
+    return;  
+  }  
+  document.getElementById("total").value=jumlah * selectedService.pricePerFollower;  
+}  
+  
+function generateTransactionID(){  
+  return `TRX${Date.now()}${Math.floor(Math.random()*1000)}`;  
+}  
+  
+function searchLayanan(){  
+  const q=document.getElementById("search").value.toLowerCase();  
+  const kategori=document.getElementById("kategori");  
+  const layanan=document.getElementById("layanan");  
+  
+  for(let k in layananData){  
+    for(let l of layananData[k]){  
+      if(l.name.toLowerCase().includes(q) || String(l.id).includes(q)){  
+        kategori.value=k;  
+        loadLayanan();  
+        layanan.value=l.id;  
+        showInfo();  
+        return;  
+      }  
+    }  
+  }  
+}  
+  
+function lanjutPembayaran(){  
+  if(!selectedService){alert("Pilih layanan terlebih dahulu!");return;}  
+  
+  const jumlah=parseInt(document.getElementById("jumlah").value||"0");  
+  if(jumlah < selectedService.min || jumlah > selectedService.max){  
+    alert(`Jumlah harus antara ${selectedService.min} dan ${selectedService.max}`);  
+    return;  
+  }  
+  
+  const trxID=generateTransactionID();  
+  const kategori=document.getElementById("kategori").value;  
+  const target=document.getElementById("target").value;  
+  const total=jumlah * selectedService.pricePerFollower;  
+  
+  window.location.href=`payment/?trx=${trxID}&kategori=${kategori}&layanan=${selectedService.name}&id=${selectedService.id}&jumlah=${jumlah}&total=${total}&target=${encodeURIComponent(target)}`;  
+}  
+  
+// MAINTENANCE REDIRECT  
+const isMaintenance=false;  
+if(isMaintenance){  
+  window.location.href="/sosmed-2/";  
+}  
+	  
+/* 🔒 ANTI DEVTOOLS  */
+
+document.addEventListener("keydown", function(e){
+  // F12
+  if(e.key === "F12") e.preventDefault();
+
+  // Ctrl + Shift + I/C/J
+  if(e.ctrlKey && e.shiftKey &&
+    ["I","C","J"].includes(e.key)) e.preventDefault();
+
+  // Ctrl + U
+  if(e.ctrlKey && e.key === "u") e.preventDefault();
+});
+
+// Deteksi DevTools (lebih aman, tidak pakai resize hack)
+setInterval(() => {
+  const threshold = 160;
+  if (window.devtoolsOpen) return;
+
+  const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+
+  if (widthThreshold && !/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    document.body.innerHTML =
+      "<h1 style='color:gold;text-align:center;margin-top:40vh;'>🚫 Developer Tools Terdeteksi</h1>";
+  }
+}, 2000);
+  
+</script>  
+  
+</body>  
+</html>  
+  
+ 
